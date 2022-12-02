@@ -30,20 +30,24 @@ foreach (var line in lines)
         {
             "A" => 3,
             "B" => 0,
-            "C" => 6
+            "C" => 6,
+            _ => throw new Exception($"opponent value {opponent}")
         },
         "Y" => 2 + opponent switch
         {
             "A" => 6,
             "B" => 3,
-            "C" => 0
+            "C" => 0,
+            _ => throw new Exception($"opponent value {opponent}")
         },
         "Z" => 3 + opponent switch
         {
             "A" => 0,
             "B" => 6,
-            "C" => 3
-        }
+            "C" => 3,
+            _ => throw new Exception($"opponent value {opponent}")
+        },
+        _ => throw new Exception($"me value {me}")
     };
 
 
@@ -58,20 +62,24 @@ foreach (var line in lines)
         {
             "A" => 3,
             "B" => 1,
-            "C" => 2
+            "C" => 2,
+            _ => throw new Exception($"opponent value {opponent}")
         },
         "Y" => 3 + opponent switch
         {
             "A" => 1,
             "B" => 2,
-            "C" => 3
+            "C" => 3,
+            _ => throw new Exception($"opponent value {opponent}")
         },
         "Z" => 6 + opponent switch
         {
             "A" => 2,
             "B" => 3,
-            "C" => 1
-        }
+            "C" => 1,
+            _ => throw new Exception($"opponent value {opponent}")
+        },
+        _ => throw new Exception($"me value {me}")
     };
 }
 
