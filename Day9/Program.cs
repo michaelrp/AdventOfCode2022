@@ -7,6 +7,7 @@ var tx = 0;
 var ty = 0;
 
 var visited = new HashSet<string>();
+visited.Add("0:0");
 
 foreach(var move in lines)
 {
@@ -29,16 +30,21 @@ foreach(var move in lines)
         if (Math.Abs(hx - tx) > 1)
         {
             tx = dir == "L" ? hx + 1 : hx - 1;
+            ty = hy;
         }
 
         // check y distance
         if (Math.Abs(hy - ty) > 1)
         {
             ty = dir == "U" ? hy - 1 : hy + 1;
+            tx = hx;
         }
 
         visited.Add($"{tx}:{ty}");
+
+        // Console.WriteLine($"h ({hx}, {hy}), t ({tx},{ty})");
     }
+
 }
 
 // Simulate your complete hypothetical series of motions.
