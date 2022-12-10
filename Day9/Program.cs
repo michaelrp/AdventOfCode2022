@@ -3,6 +3,9 @@
 var lines = File.ReadAllLines("input.txt");
 Console.WriteLine($"{lines.Length} lines in file");
 
+
+// these are used to draw the grid in ViewPosition
+// and do not contributed to the calculation
 var minhx = 0;
 var maxhx = 0;
 var minhy = 0;
@@ -39,7 +42,7 @@ foreach (var move in lines)
         maxhy = knots[0, 1] > maxhy ? knots[0, 1] : maxhy;
 
         // move tails
-        MoveTail(0, 1);
+        MoveTail(0);
 
     }
     // ViewPosition();
@@ -53,8 +56,10 @@ foreach (var move in lines)
 
 Console.WriteLine($"visited count {visited.Count} with {knotCount} knots");
 
-void MoveTail(int h, int t)
+void MoveTail(int h)
 {
+    var t = h + 1;
+
     var hx = knots[h, 0];
     var hy = knots[h, 1];
     var tx = knots[t, 0];
@@ -82,7 +87,7 @@ void MoveTail(int h, int t)
     knots[t, 1] = p.Item2;
 
     if (t + 1 < knotCount)
-        MoveTail(t, t + 1);
+        MoveTail(t);
     else
         visited.Add($"{knots[t, 0]}:{knots[t, 1]}");
 }
@@ -112,7 +117,7 @@ void ViewPosition()
         var display = i == 0 ? "H" : i == (knotCount - 1) ? "T" : i.ToString();
 
         grid[xoffset, yoffset] = "s"; // starting point
-        
+
         grid[x + xoffset, y + yoffset] = display;
     }
 
