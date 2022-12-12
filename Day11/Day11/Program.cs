@@ -13,12 +13,10 @@ for(int i = 0; i <= monkeyCount; i++)
     monkeys.Add(new Monkey(mlines));
 }
 
-var commonDenominator = 1;
+var mod = 1;
+monkeys.ForEach(m => mod *= m.Divisor);
 
-foreach(var monkey in monkeys)
-{
-    commonDenominator *= monkey.Divisor;
-}
+Console.WriteLine("");
 
 monkeys.ForEach(m => Console.WriteLine(m));
 
@@ -29,21 +27,24 @@ for(int r = 0; r < rounds; r++)
         while(monkey.HasItem())
         {
             var worry = monkey.GetNextCalculatedWorry();
-            worry = worry % commonDenominator;
+            worry = worry % mod;
             var throwTo = monkey.GetThrowTo(worry);
             monkeys[throwTo].Items.Enqueue(worry);
         }
     }
 }
 
-var sorted = monkeys.OrderByDescending(m => m.Inspected).ToList();
-
 Console.WriteLine("");
 
 monkeys.ForEach(m => Console.WriteLine(m));
 
-var value = sorted[0].Inspected * sorted[1].Inspected;
+Console.WriteLine("");
+
+monkeys.ForEach(m => Console.WriteLine($"{m.Id}: inspected {m.Inspected}"));
 
 Console.WriteLine("");
 
-Console.WriteLine($"product of two values: {value}");
+var sorted = monkeys.OrderByDescending(m => m.Inspected).ToList();
+var value = sorted[0].Inspected * sorted[1].Inspected;
+
+Console.WriteLine($"product of two top values: {value}");
