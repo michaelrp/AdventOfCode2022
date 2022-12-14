@@ -1,4 +1,4 @@
-namespace Day3.Tests;
+namespace Day03.Tests;
 
 public class ItemTests
 {
