@@ -1,4 +1,4 @@
-namespace Day5.Tests;
+namespace Day05.Tests;
 
 public class MoveTests
 {

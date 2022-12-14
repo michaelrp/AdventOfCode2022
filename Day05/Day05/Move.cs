@@ -1,4 +1,4 @@
-namespace Day5;
+namespace Day05;
 
 public class Move
 {

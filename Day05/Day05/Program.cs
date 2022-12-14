@@ -1,4 +1,4 @@
-﻿var lines = File.ReadAllLines("../Day5/input.txt");
+﻿var lines = File.ReadAllLines("../Day05/input.txt");
 
 Console.WriteLine($"{lines.Length} lines in file");
 

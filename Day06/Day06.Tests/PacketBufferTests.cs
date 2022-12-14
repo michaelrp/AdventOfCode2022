@@ -1,4 +1,4 @@
-namespace Day6.Tests;
+namespace Day06.Tests;
 
 public class PacketBufferTests
 {
