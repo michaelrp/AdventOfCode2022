@@ -1,4 +1,4 @@
-namespace Day4.Tests;
+namespace Day04.Tests;
 
 public class SectionRangeTests
 {
