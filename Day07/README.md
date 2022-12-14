@@ -1,3 +1,3 @@
-# Day7
+# Day 7
 
 Decided to do today's all in a single file.
