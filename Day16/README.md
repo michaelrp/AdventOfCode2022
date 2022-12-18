@@ -17,4 +17,6 @@ This hack reduced the number of evaluations from 231,247 to 69,542.
 
 ## Part 2
 
-TBD
+Yeah, the method I used is clearly not the most efficient. It found the result, but it took a few minutes to test all the 6,000+ combinations of valves. I'm not a fan of this approach.
+
+Onward!

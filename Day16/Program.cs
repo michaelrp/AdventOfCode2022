@@ -1,14 +1,14 @@
-﻿Console.WriteLine("{0:mm:ss.ffff} - Load", DateTime.Now);
+﻿using Day16;
+
+Console.WriteLine("{0:mm:ss.ffff} - Load", DateTime.Now);
 
 var lines = File.ReadAllLines("input.txt");
 var valves = lines.Select(l => new Valve(l)).ToList();
 
 // valves.ForEach(v => Console.WriteLine(v));
 
-var minutes = 30;
-
-// mins remaining after open * rate = value
-// potential = (mins - distance - 1) * rate = value
+var remainHack = 8;
+var releaseHack = .5d;
 
 Console.WriteLine("{0:mm:ss.ffff} - Get Distances", DateTime.Now);
 
@@ -32,6 +32,9 @@ for (int i = 0; i < ratedValves.Length; i++)
 
 // valveDistances.ToList().ForEach(kv => Console.WriteLine($"{kv.Key} -> {kv.Value}"));
 
+// PART 1
+Console.WriteLine("{0:mm:ss.ffff} - PART 1", DateTime.Now);
+
 // var paths = new Dictionary<Path, int>();
 var mostRelased = (Path: new Path("AA"), Released: 0);
 var pathsChecked = 0;
@@ -40,19 +43,70 @@ var start = valves.First(v => v.Id == "AA");
 
 Console.WriteLine("{0:mm:ss.ffff} - Get Potentials", DateTime.Now);
 
-GetPotentials(minutes, "AA", new string[] { }, 0, 0, new Path("AA"));
+GetPotentials(30, ratedValves, "AA", new string[] { }, 0, 0, new Path("AA"));
 
 Console.WriteLine("{0:mm:ss.ffff} - Paths checked: {1}", DateTime.Now, pathsChecked);
 Console.WriteLine("{0:mm:ss.ffff} - Released {1}: {2}", DateTime.Now, mostRelased.Released, mostRelased.Path.Segments);
 
+// PART 2
+
+// for each combination of groups
+//      find best for the two of them...maybe can't use current hack to trim?
+
+var bestPathPair = new PathPair(new Path("AA"), new Path("AA"), 0, 0);
+var sets = ratedValves.Combinations(7).ToArray();
+
+Console.WriteLine("{0:mm:ss.ffff} - {1} sets", DateTime.Now, sets.Count());
+int s = 1;
+
+foreach (var set in sets)
+{
+    var g1 = set.ToArray();
+    var g2 = ratedValves.Except(g1).ToArray();
+
+    // Console.WriteLine($"{string.Join(", ", g1)} :: {string.Join(", ", g2)}");
+
+    mostRelased = (Path: new Path("AA"), Released: 0);
+    pathsChecked = 0;
+
+    GetPotentials(26, g1.ToArray(), "AA", new string[] { }, 0, 0, new Path("AA"));
+
+    var g1released = mostRelased.Released;
+    var g1path = mostRelased.Path.Segments;
+    var g1pathsChecked = pathsChecked;
+
+    mostRelased = (Path: new Path("AA"), Released: 0);
+    pathsChecked = 0;
+
+    GetPotentials(26, g2, "AA", new string[] { }, 0, 0, new Path("AA"));
+
+    var g2released = mostRelased.Released;
+    var g2path = mostRelased.Path.Segments;
+    var g2pathsChecked = pathsChecked;
+
+    if (g1released + g2released > bestPathPair.Total)
+        bestPathPair = new PathPair(new Path(g1path), new Path(g2path), g1released, g2released);
+
+    Console.WriteLine("{0:mm:ss.ffff} - [{5}] Paths: {1} + {2} = {3}; Released {4}; Best {6}", DateTime.Now,
+        g1pathsChecked, g2pathsChecked, (g1pathsChecked + g2pathsChecked), (g1released + g2released),
+        s, bestPathPair.Total);
+    
+    s++;
+}
+
+Console.WriteLine("{0:mm:ss.ffff} - Best pair: {1}: {2} :: {3}",
+    DateTime.Now, bestPathPair.Total, bestPathPair.Path1.Segments, bestPathPair.Path2.Segments);
+
+//------------------------------------------------
+
 // find all potential values
-void GetPotentials(int remaining, string fromId, string[] visited, int released, int depth, Path path)
+void GetPotentials(int remaining, string[] rated, string fromId, string[] visited, int released, int depth, Path path)
 {
     if (remaining < 3) // no point as there is no time to move and open
         return;
 
     var from = valves!.First(v => v.Id == fromId);
-    var toVisit = ratedValves!.Except(visited).ToArray();
+    var toVisit = rated!.Except(visited).ToArray();
 
     foreach (var toId in toVisit)
     {
@@ -67,11 +121,8 @@ void GetPotentials(int remaining, string fromId, string[] visited, int released,
 
             var potential = (remain * to.Rate) + released;
 
-            // if (!paths.ContainsKey(path))
-            //     paths.Add(path, potential);
-
             // A hack! if remain < 10 minutes and potential is < 50% of current mostReleased, stop checking
-            if (remain < 10 && potential / mostRelased.Released < .5)
+            if (remain < remainHack && potential / mostRelased.Released < releaseHack)
                 continue;
 
             if (potential > mostRelased.Released)
@@ -82,8 +133,9 @@ void GetPotentials(int remaining, string fromId, string[] visited, int released,
             var newVisited = visited.Concat(new string[] { toId }).ToArray();
             var newPath = string.Format("{0}->{1}", path.Segments, toId);
 
-            GetPotentials(remain, toId, newVisited, potential, depth + 1, new Path(newPath));
+            GetPotentials(remain, rated, toId, newVisited, potential, depth + 1, new Path(newPath));
         }
+
     }
 }
 
@@ -142,6 +194,30 @@ struct Path
     public Path(string segments)
     {
         Segments = segments;
+    }
+}
+
+struct PathPair
+{
+    public Path Path1 { get; }
+    public Path Path2 { get; }
+    public int Path1Released { get; }
+    public int Path2Released { get; }
+
+    public PathPair(Path p1, Path p2, int p1released, int p2released)
+    {
+        Path1 = p1;
+        Path2 = p2;
+        Path1Released = p1released;
+        Path2Released = p2released;
+    }
+
+    public int Total
+        => Path1Released + Path2Released;
+
+    public override string ToString()
+    {
+        return string.Format("{0}: {1} ({3}) :: {2} ({4})", Total, Path1, Path2, Path1Released, Path2Released);
     }
 }
 
