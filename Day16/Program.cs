@@ -1,4 +1,6 @@
-﻿var lines = File.ReadAllLines("input.txt");
+﻿Console.WriteLine("{0:mm:ss.ffff} - Load", DateTime.Now);
+
+var lines = File.ReadAllLines("input.txt");
 var valves = lines.Select(l => new Valve(l)).ToList();
 
 // valves.ForEach(v => Console.WriteLine(v));
@@ -7,6 +9,8 @@ var minutes = 30;
 
 // mins remaining after open * rate = value
 // potential = (mins - distance - 1) * rate = value
+
+Console.WriteLine("{0:mm:ss.ffff} - Get Distances", DateTime.Now);
 
 // get a set of all the shortest distances from each valve > 0 to other valves > 0
 var ratedValves = valves.Where(v => v.Rate > 0).Select(v => v.Id).ToArray();
@@ -28,19 +32,21 @@ for (int i = 0; i < ratedValves.Length; i++)
 
 // valveDistances.ToList().ForEach(kv => Console.WriteLine($"{kv.Key} -> {kv.Value}"));
 
-var paths = new Dictionary<string, int>();
-var mostRelased = (Path: "", Released: 0);
+// var paths = new Dictionary<Path, int>();
+var mostRelased = (Path: new Path("AA"), Released: 0);
+var pathsChecked = 0;
 
 var start = valves.First(v => v.Id == "AA");
 
-GetPotentials(minutes, "AA", new string[] { }, 0, 0, "AA");
+Console.WriteLine("{0:mm:ss.ffff} - GetPotentials", DateTime.Now);
 
-// var sortedPaths = paths.OrderByDescending(kv => kv.Value).ToDictionary(kv => kv.Key, kv => kv.Value);
+GetPotentials(minutes, "AA", new string[] { }, 0, 0, new Path("AA"));
 
-Console.WriteLine($"Most: {mostRelased.Released}: {mostRelased.Path}");
+Console.WriteLine("{0:mm:ss.ffff} - Paths checked {1}", DateTime.Now, pathsChecked);
+Console.WriteLine("{0:mm:ss.ffff} - Released {1}: {2}", DateTime.Now, mostRelased.Released, mostRelased.Path.Segments);
 
 // find all potential values
-void GetPotentials(int remaining, string fromId, string[] visited, int released, int depth, string path)
+void GetPotentials(int remaining, string fromId, string[] visited, int released, int depth, Path path)
 {
     if (remaining < 3) // no point as there is no time to move and open
         return;
@@ -57,10 +63,16 @@ void GetPotentials(int remaining, string fromId, string[] visited, int released,
 
         if (remain > 0)
         {
+            pathsChecked++;
+
             var potential = (remain * to.Rate) + released;
 
-            if (!paths.ContainsKey(path))
-                paths.Add(path, potential);
+            // if (!paths.ContainsKey(path))
+            //     paths.Add(path, potential);
+
+            // A hack! if remain < 10 minutes and potential is < 50% of current mostReleased, stop checking
+            if (remain < 10 && potential / mostRelased.Released < .5)
+                continue;
 
             if (potential > mostRelased.Released)
                 mostRelased = (Path: path, Released: potential);
@@ -69,7 +81,7 @@ void GetPotentials(int remaining, string fromId, string[] visited, int released,
 
             var newVisited = visited.Concat(new string[] { toId }).ToArray();
 
-            GetPotentials(remain, toId, newVisited, potential, depth + 1, path += $"->{toId}");
+            GetPotentials(remain, toId, newVisited, potential, depth + 1, new Path(path.Segments + "->" + toId));
         }
     }
 }
@@ -120,6 +132,15 @@ class Node
         Id = id;
         To = to;
         Distance = -1;
+    }
+}
+
+struct Path
+{
+    public string Segments { get; }
+    public Path(string segments)
+    {
+        Segments = segments;
     }
 }
 
