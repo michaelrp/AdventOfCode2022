@@ -4,9 +4,16 @@
 
 Although it _feels_ wrong, I brute forced this one. Calculate total release for all possible paths visiting valves with `Rate > 0` and picking the biggest.
 
-The winning route:
+The winning route (does not include valves where `rate == 0`): `AA->OV->FJ->EL->ST->PF->MD`
 
-AA->TM->ST->WC->JQ->XX->IN->LR->OV->TM->ST->WC->JQ->XX->IN->LR->KQ->DK->PF->FJ->TM->ST->WC->JQ->XX->IN->LR->KQ->DK->PF->FK->MD->EL->TM->ST->TM->WC->JQ->XX->IN->LR->KQ->DK->PF->TM->JQ->XX->LR->KQ->DK->FK->MD
+Also, started trimming results to improve performance. Added the following:
+
+```csharp
+if (remain < 10 && potential / mostRelased.Released < .5)
+    continue;
+```
+
+This hack reduced the number of evaluations from 231,247 to 69,542.
 
 ## Part 2
 

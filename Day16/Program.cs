@@ -38,11 +38,11 @@ var pathsChecked = 0;
 
 var start = valves.First(v => v.Id == "AA");
 
-Console.WriteLine("{0:mm:ss.ffff} - GetPotentials", DateTime.Now);
+Console.WriteLine("{0:mm:ss.ffff} - Get Potentials", DateTime.Now);
 
 GetPotentials(minutes, "AA", new string[] { }, 0, 0, new Path("AA"));
 
-Console.WriteLine("{0:mm:ss.ffff} - Paths checked {1}", DateTime.Now, pathsChecked);
+Console.WriteLine("{0:mm:ss.ffff} - Paths checked: {1}", DateTime.Now, pathsChecked);
 Console.WriteLine("{0:mm:ss.ffff} - Released {1}: {2}", DateTime.Now, mostRelased.Released, mostRelased.Path.Segments);
 
 // find all potential values
@@ -80,8 +80,9 @@ void GetPotentials(int remaining, string fromId, string[] visited, int released,
             // Console.WriteLine($"{new string('\t', depth)}{fromId}->{toId}: (({remaining} - {distance} - 1) * {to.Rate}) + {released} = {potential}");
 
             var newVisited = visited.Concat(new string[] { toId }).ToArray();
+            var newPath = string.Format("{0}->{1}", path.Segments, toId);
 
-            GetPotentials(remain, toId, newVisited, potential, depth + 1, new Path(path.Segments + "->" + toId));
+            GetPotentials(remain, toId, newVisited, potential, depth + 1, new Path(newPath));
         }
     }
 }
